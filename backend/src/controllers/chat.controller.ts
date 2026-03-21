@@ -12,7 +12,13 @@ export const chat = async (req: Request, res: Response) => {
         `${process.env.ML_MODEL_URL}/predict`,
         { message }
         );
-
+        
+        if(!response.data) {
+            return res.status(400).json({ 
+                success: false,
+                message: "Error processing request by ML Model",
+            });
+        }
         const reply = response.data.reply;
         console.log('reply', reply)
 
