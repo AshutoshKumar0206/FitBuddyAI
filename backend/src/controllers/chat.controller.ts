@@ -16,7 +16,7 @@ export const chat = async (req: Request, res: Response) => {
         if(!response.data) {
             return res.status(400).json({ 
                 success: false,
-                message: "Error processing request by ML Model",
+                reply: "Error processing request by ML Model",
             });
         }
         const reply = response.data.reply;
@@ -30,7 +30,7 @@ export const chat = async (req: Request, res: Response) => {
             reply, 
         });
     } catch (err) {
-        res.json({ reply: "Error processing request" });
+        res.status(500).json({ success: false, reply: "Error processing request" });
     }
 };
 
