@@ -8,7 +8,7 @@ import chatRoutes from "./routes/chat.routes";
 const app = express();
 const PORT = process.env.PORT || 7000;
 
-const allowedOrigins = ["fit-buddy-ai-taupe.vercel.app", "http://localhost:5173"];
+const allowedOrigins = ["fit-buddy-ai-taupe.vercel.app", "http://localhost:5173", "https://fitbuddyai-1.onrender.com"];
 app.use(cors({
   origin: allowedOrigins,
   methods: ["GET", "POST", "PUT", "DELETE"],

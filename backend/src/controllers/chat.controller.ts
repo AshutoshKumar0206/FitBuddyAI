@@ -8,9 +8,9 @@ export const chat = async (req: Request, res: Response) => {
 
     try {
         // Call Python ML API
-        const model = await axios.post("http://127.0.0.1:8000/train");
+        const model = await axios.post(`${process.env.ML_MODEL_URL}/train`);
         const response = await axios.post(
-        "http://127.0.0.1:8000/predict",
+        `${process.env.ML_MODEL_URL}/predict`,
         { message }
         );
 
