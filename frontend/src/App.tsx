@@ -164,7 +164,7 @@ export default function ChatbotUI() {
           <div className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-5" style={{ background: "var(--bg)" }}>
             {chatHistory.length === 0 && !loading && (
               <div className="flex-1 flex flex-col items-center justify-center gap-3 opacity-40">
-                <p className="text-sm">Ask me anything</p>
+                <p className="text-sm">Hey! I'm FitBuddy. How can I help you level up today? 🥗🏋️‍♂️</p>
               </div>
             )}
 
