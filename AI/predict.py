@@ -82,10 +82,11 @@ def predict(text):
 @app.route("/predict", methods=["POST"])
 def predict_api():
     data = request.json
+    print(data)
     message = data["message"]
 
     reply = predict(message)
-
+    print(reply)
     return jsonify({"reply": reply})
 
 if __name__ == "__main__":
