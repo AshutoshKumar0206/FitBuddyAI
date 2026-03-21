@@ -89,7 +89,7 @@ export default function ChatbotUI() {
 
   const generateResponse = async (message: string) => {
     try {
-      const res = await axios.post("http://localhost:7000/chats/chat", { message });
+      const res = await axios.post(`${import.meta.env.REACT_PUBLIC_BASE_URL}/chats/chat`, { message });
       if (res.data.success) return res.data.reply;
     } catch (err) {
       console.error(err);
