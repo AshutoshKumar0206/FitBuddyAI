@@ -1,6 +1,4 @@
-// server/index.js
 import express from "express";
-// import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
@@ -8,9 +6,11 @@ import { connectDB } from "./config/database";
 import chatRoutes from "./routes/chat.routes";
 
 const app = express();
-const PORT = 7000;
+const PORT = process.env.PORT || 7000;
+
+const allowedOrigins = ["fit-buddy-ai-taupe.vercel.app", "http://localhost:5173"];
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: allowedOrigins,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
