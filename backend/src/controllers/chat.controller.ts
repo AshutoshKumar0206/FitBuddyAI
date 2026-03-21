@@ -30,6 +30,7 @@ export const chat = async (req: Request, res: Response) => {
             reply, 
         });
     } catch (err) {
+        console.log(err);
         res.status(500).json({ success: false, reply: "Error processing request" });
     }
 };
