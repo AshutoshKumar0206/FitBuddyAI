@@ -66,6 +66,7 @@ function ThinkingDots() {
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function ChatbotUI() {
   // CHANGED: Using an array to store the conversation history
+  const [error, setError] = useState<boolean>(false);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -88,12 +89,16 @@ export default function ChatbotUI() {
   }, [input]);
 
   const generateResponse = async (message: string) => {
+    setError(false);
     try {
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/chats/chat`, { message });
       if (res.data.success) return res.data.reply;
+      setError(true);
+      return null;
     } catch (err) {
       console.error(err);
-      return "Sorry, I encountered an error connecting to the server.";
+      setError(true);
+      return null;
     }
   };
 
@@ -107,20 +112,34 @@ export default function ChatbotUI() {
     
     setInput("");
     setLoading(true);
+    setError(false);
 
     // 2. Fetch AI Response
-    const aiReplyText = await generateResponse(text);
-    
-    // 3. Add AI Message to History
-    const aiMsg: ChatMessage = { 
-        id: (Date.now() + 1).toString(), 
-        text: aiReplyText || "No response received.", 
-        sender: 'ai' 
-    };
-    
-    setChatHistory(prev => [...prev, aiMsg]);
-    setTypingId(aiMsg.id); // Trigger typewriter for this specific message
-    setLoading(false);
+    const aiReplyPromise = await generateResponse(text);
+    const delayPromise = new Promise(resolve => setTimeout(resolve, 1500));
+
+    try {
+      const [aiReplyText] = await Promise.all([aiReplyPromise, delayPromise]);
+      setLoading(false);
+        
+      
+      // 3. Add AI Message to History
+      if(aiReplyText) {
+        const aiMsg: ChatMessage = { 
+            id: (Date.now() + 1).toString(), 
+            text: aiReplyText || "No response received.", 
+            sender: 'ai' 
+        };
+        setChatHistory(prev => [...prev, aiMsg]);
+        setTypingId(aiMsg.id); // Trigger typewriter for this specific message
+      } else {
+        setLoading(false);
+      } 
+    } catch(err) {
+      console.error(err);
+      setLoading(false);
+      setError(true);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -162,9 +181,26 @@ export default function ChatbotUI() {
 
           {/* Conversation Area */}
           <div className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-5" style={{ background: "var(--bg)" }}>
-            {chatHistory.length === 0 && !loading && (
+            {chatHistory.length === 0 && !loading && !error && ( 
               <div className="flex-1 flex flex-col items-center justify-center gap-3 opacity-40">
                 <p className="text-sm">Hey! I'm FitBuddy. How can I help you level up today? 🥗🏋️‍♂️</p>
+              </div>
+            )}
+
+            {/* 2. Loading State: Show typing animation while thinking */}
+            {loading && (
+              <div className="flex-1 flex flex-col items-center justify-center gap-2 italic text-gray-500">
+                <div className="flex gap-1">
+                <ThinkingDots/>
+                </div>
+                <p className="text-xs">FitBuddy is thinking...</p>
+              </div>
+            )}
+
+            {/* 3. Error State: If the API fails */}
+            {error && (
+              <div className="flex-1 flex flex-col items-center justify-center gap-3 text-red-400">
+                <p className="text-sm">Something went wrong. Try again.</p>
               </div>
             )}
 
