@@ -74,6 +74,15 @@ def get_response(label):
     return responses.get(label, "Tell me your goal!")
 
 def predict(text):
+    global model, vectorizer
+    # Check if model is loaded; if not, try to load it again
+    if vectorizer is None or model is None:
+        load_model()
+    
+    # If it's STILL None after trying to load, return an error message
+    if vectorizer is None:
+        return "I'm still warming up! Please try again in a second or trigger the /train route."
+    
     X = vectorizer.transform([text])
     label = model.predict(X)[0]
     return get_response(label)
