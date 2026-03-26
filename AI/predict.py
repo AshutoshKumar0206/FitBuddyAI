@@ -4,6 +4,9 @@ import pickle
 import json
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__)
 CORS(app)
@@ -15,9 +18,14 @@ vectorizer = None
 def load_model():
     global model, vectorizer
     try:
-        model = pickle.load(open("model.pkl", "rb"))
-        vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+        model_path = os.path.join(BASE_DIR, "model.pkl")
+        vectorizer_path = os.path.join(BASE_DIR, "vectorizer.pkl")
+
+        model = pickle.load(open(model_path, "rb"))
+        vectorizer = pickle.load(open(vectorizer_path, "rb"))
+
         print("Model loaded successfully")
+
     except Exception as e:
         print("Error loading model:", e)
         model = None
@@ -27,7 +35,8 @@ load_model()
 @app.route("/train", methods=["POST"])
 def train_api():
     try:
-        with open("data.json") as f:
+        data_path = os.path.join(BASE_DIR, "data.json")
+        with open(data_path) as f:
             data = json.load(f)
         
         texts = [d["text"] for d in data]
@@ -92,13 +101,18 @@ def health():
 
 @app.route("/predict", methods=["POST"])
 def predict_api():
-    data = request.json
-    print(data)
-    message = data["message"]
+    try:
+        data = request.json
+        message = data.get("message", "")
 
-    reply = predict(message)
-    print(reply)
-    return jsonify({"reply": reply})
+        if not message:
+            return jsonify({"error": "No message provided"}), 400
+
+        reply = predict(message)
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # if __name__ == "__main__":
 #     load_model()
