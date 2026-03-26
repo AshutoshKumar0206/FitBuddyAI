@@ -87,7 +87,7 @@ def predict(text):
     label = model.predict(X)[0]
     return get_response(label)
 
-@app.route("/health")
+@app.route("/health", methods=["GET"])
 def health():
     return "AI Server OK", 200
 
