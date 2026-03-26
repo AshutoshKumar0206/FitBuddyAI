@@ -20,6 +20,9 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Server working");
 });
+app.get("/health", (req, res)=> {
+  res.status(200).send("Server OK")
+})
 app.use("/chats", chatRoutes);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
