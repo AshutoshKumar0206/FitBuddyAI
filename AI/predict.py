@@ -100,6 +100,6 @@ def predict_api():
     print(reply)
     return jsonify({"reply": reply})
 
-if __name__ == "__main__":
-    load_model()
-    app.run(port=8000, debug=True)
+# if __name__ == "__main__":
+#     load_model()
+#     app.run(port=8000, debug=True)
