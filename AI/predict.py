@@ -17,9 +17,12 @@ def load_model():
     try:
         model = pickle.load(open("model.pkl", "rb"))
         vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
-    except FileNotFoundError:
-        print("No model found. Please train first.")
-
+        print("Model loaded successfully")
+    except Exception as e:
+        print("Error loading model:", e)
+        model = None
+        vectorizer = None
+load_model()
 # 1. NEW TRAIN ROUTE
 @app.route("/train", methods=["POST"])
 def train_api():
@@ -77,11 +80,7 @@ def predict(text):
     global model, vectorizer
     # Check if model is loaded; if not, try to load it again
     if vectorizer is None or model is None:
-        load_model()
-    
-    # If it's STILL None after trying to load, return an error message
-    if vectorizer is None:
-        return "I'm still warming up! Please try again in a second or trigger the /train route."
+        return "Model not loaded yet. Please train first."
     
     X = vectorizer.transform([text])
     label = model.predict(X)[0]
